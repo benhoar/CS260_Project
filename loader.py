@@ -17,9 +17,9 @@ class StockFeaturesDataset(td.Dataset):
             next(reader)
             for row in reader:
                 for idx, item in enumerate(row):
-                    if item == 'Strong Buy' and binary:
+                    if item == 'Strong Buy' and not binary:
                         row[idx] = '2.0'
-                    elif item == 'Strong Buy' and not binary:
+                    elif item == 'Strong Buy' and binary:
                         row[idx] = '1.0'
                     elif item == 'True' or item == 'Buy' or item == 'Strong Buy':
                         row[idx] = '1.0'
@@ -40,7 +40,6 @@ class StockFeaturesDataset(td.Dataset):
 
         label = self.stocks_frame[idx][-1]
         label = np.array(label)
-        label = label.astype(np.int_)
         
         sample = (indicators, label)
         return sample
