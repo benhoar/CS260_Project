@@ -13,25 +13,25 @@ DATA_FILE = 'Stocks_forML_Feb24.csv'
 batch_size = 64
 test_batch_size = 64
 
-train_loader, _ = stock_loaders(batch_size, DATA_FILE, True)
-_, test_loader = stock_loaders(test_batch_size, DATA_FILE, True)
+train_loader, _ = stock_loaders(batch_size, DATA_FILE, False)
+_, test_loader = stock_loaders(test_batch_size, DATA_FILE, False)
 
 # The number of epochs is at least 10, you can increase it to achieve better performance
-num_epochs = 10
-learning_rate = 1e-1
+num_epochs = 20
+learning_rate = 1e-3
 
 print("Starting training for fully-connected with ReLU")
 # Define the model for fully-connected with ReLU
 class LinNet(nn.Module):
     def __init__(self):
         super(LinNet, self).__init__()
-        self.fc1 = nn.Linear(26, 52)
-        self.fc2 = nn.Linear(52, 104)
-        self.fc3 = nn.Linear(104, 208)
-        self.fc4 = nn.Linear(208, 416)
-        self.fc5 = nn.Linear(416, 832)
-        self.fc6 = nn.Linear(832, 1664)
-        self.fc7 = nn.Linear(1664, 1)
+        self.fc1 = nn.Linear(26, 128)
+        self.fc2 = nn.Linear(128, 256)
+        self.fc3 = nn.Linear(256, 512)
+        self.fc4 = nn.Linear(512, 512)
+        self.fc5 = nn.Linear(512, 512)
+        self.fc6 = nn.Linear(512, 512)
+        self.fc7 = nn.Linear(512, 3)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
@@ -49,7 +49,7 @@ model = LinNet()
 # model = model.cuda()
 
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
-criterion = nn.BCEWithLogitsLoss()
+criterion = nn.CrossEntropyLoss()
 epoch_num = 1
 
 # Training the Model
@@ -61,10 +61,10 @@ for epoch in range(num_epochs):
         # labels = labels.cuda()
 
         # Compute predicted value
-        y_pred = model(images.float()).squeeze(1)
+        y_pred = model(images.float())
         
         # Compute loss
-        loss = criterion(y_pred, labels)
+        loss = criterion(y_pred, labels.long())
         total_loss += loss.item()
 
         # Update weights
@@ -84,8 +84,9 @@ for images, labels in test_loader:
     # images = images.cuda()
     # labels = labels.cuda()
 
-    outputs = model(images.float()).squeeze(1)
-    predicted = torch.round(torch.sigmoid(outputs))
+    outputs = model(images.float())
+    _, predicted = torch.max(outputs.data, 1)
+    print(predicted)
     total += labels.size(0)
     correct += (predicted == labels).sum().item()
     

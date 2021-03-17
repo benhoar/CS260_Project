@@ -21,12 +21,13 @@ class StockFeaturesDataset(td.Dataset):
                         row[idx] = '2.0'
                     elif item == 'Strong Buy' and binary:
                         row[idx] = '1.0'
-                    elif item == 'True' or item == 'Buy' or item == 'Strong Buy':
+                    elif item == 'True' or item == 'Buy':
                         row[idx] = '1.0'
                     elif item == 'False' or item == 'Pass':
                         row[idx] = '0.0'
                 row = [float(x) for x in row[1:]]
                 self.stocks_frame.append(row)
+                next(reader)
 
     def __len__(self):
         return len(self.stocks_frame)
