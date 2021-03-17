@@ -40,6 +40,7 @@ class StockFeaturesDataset(td.Dataset):
 
         label = self.stocks_frame[idx][-1]
         label = np.array(label)
+        label = label.astype(np.int_)
         
         sample = (indicators, label)
         return sample
