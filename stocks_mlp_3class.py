@@ -8,8 +8,9 @@ import numpy as np
 import torch.utils.data as td
 import random, time
 from utils.loader import stock_loaders
+from os import path
 
-DATA_FILE = 'Stocks_forML_Feb24.csv'
+DATA_FILE = path.join('data', 'Stocks_forML_Feb24.csv')
 DROP_NUM = 0
 batch_size = 64
 test_batch_size = 64

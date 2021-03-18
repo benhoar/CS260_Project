@@ -9,8 +9,9 @@ import torch.utils.data as td
 import random, time
 import csv
 from utils.loader import stock_loaders
+from os import path
 
-DATA_FILE = 'split_categorical.csv'
+DATA_FILE = path.join('data', 'split_categorical.csv')
 DROP_NUM = 0
 batch_size = 64
 test_batch_size = 64
@@ -18,7 +19,7 @@ test_batch_size = 64
 train_loader, test_loader = stock_loaders(batch_size, DATA_FILE, True, DROP_NUM)
 
 # The number of epochs is at least 10, you can increase it to achieve better performance
-num_epochs = 10
+num_epochs = 20
 learning_rate = 0.01
 
 print("Starting training for Linear SVM")
