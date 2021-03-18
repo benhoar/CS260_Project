@@ -10,11 +10,11 @@ import random, time
 from loader import stock_loaders
 
 DATA_FILE = 'Stocks_forML_Feb24.csv'
+DROP_NUM = 0
 batch_size = 64
 test_batch_size = 64
 
-train_loader, _ = stock_loaders(batch_size, DATA_FILE, False)
-_, test_loader = stock_loaders(test_batch_size, DATA_FILE, False)
+train_loader, test_loader = stock_loaders(batch_size, DATA_FILE, False, DROP_NUM)
 
 # The number of epochs is at least 10, you can increase it to achieve better performance
 num_epochs = 20
@@ -25,7 +25,7 @@ print("Starting training for fully-connected with ReLU")
 class LinNet(nn.Module):
     def __init__(self):
         super(LinNet, self).__init__()
-        self.fc1 = nn.Linear(26, 128)
+        self.fc1 = nn.Linear(26 - DROP_NUM, 128)
         self.fc2 = nn.Linear(128, 256)
         self.fc3 = nn.Linear(256, 512)
         self.fc4 = nn.Linear(512, 512)
@@ -48,20 +48,20 @@ model = LinNet()
 # For training on GPU
 # model = model.cuda()
 
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 criterion = nn.CrossEntropyLoss()
 epoch_num = 1
 
 # Training the Model
 for epoch in range(num_epochs):
     total_loss = 0
-    for i, (images, labels) in enumerate(train_loader):
+    for i, (images, labels, _) in enumerate(train_loader):
         # For training on GPU
         # images = images.cuda()
         # labels = labels.cuda()
 
         # Compute predicted value
-        y_pred = model(images.float())
+        y_pred = model(images.float()).squeeze(1)
         
         # Compute loss
         loss = criterion(y_pred, labels.long())
@@ -77,17 +77,20 @@ for epoch in range(num_epochs):
     epoch_num += 1
 
 # Test the Model
+f = open("predictions_3class.txt", "w")
 correct = 0.
 total = 0.
-for images, labels in test_loader:
+for images, labels, stocks in test_loader:
     # For training on GPU
     # images = images.cuda()
     # labels = labels.cuda()
 
-    outputs = model(images.float())
+    outputs = model(images.float()).squeeze(1)
     _, predicted = torch.max(outputs.data, 1)
-    print(predicted)
     total += labels.size(0)
     correct += (predicted == labels).sum().item()
     
+    for ind, stock in enumerate(stocks):
+        f.write('{}: {}, {}\n'.format(stock, predicted[ind], labels[ind]))
+
 print('Accuracy of the model on the test images: %f %%' % (100 * (correct / total)))

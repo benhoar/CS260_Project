@@ -10,7 +10,7 @@ import random, time
 import csv
 from loader import stock_loaders
 
-DATA_FILE = 'Stocks_forML_Feb24.csv'
+DATA_FILE = 'split_numerical.csv'
 DROP_NUM = 0
 batch_size = 64
 test_batch_size = 64
@@ -26,7 +26,7 @@ print("Starting training for Linear SVM")
 class SVM(nn.Module):
     def __init__(self):
         super(SVM, self).__init__()
-        self.svm = nn.Linear(26 - DROP_NUM, 1)
+        self.svm = nn.Linear(9 - DROP_NUM, 1)
 
     def forward(self, x):
         return self.svm(x)   
@@ -71,7 +71,7 @@ for epoch in range(num_epochs):
     epoch_num += 1
 
 # Test the Model
-f = open("predictions_2class_svm.txt", "w")
+f = open("predictions_2class_svm_numerical.txt", "w")
 correct = 0.
 total = 0.
 for images, labels, stocks in test_loader:
