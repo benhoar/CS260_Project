@@ -8,7 +8,7 @@ import numpy as np
 import torch.utils.data as td
 import random, time
 import csv
-from loader import stock_loaders
+from utils.loader import stock_loaders
 
 DATA_FILE = 'split_categorical.csv'
 DROP_NUM = 0

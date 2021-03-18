@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import numpy as np
 import torch.utils.data as td
 import random, time
-from loader import stock_loaders
+from utils.loader import stock_loaders
 
 DATA_FILE = 'split_numerical.csv'
 DROP_NUM = 0
